@@ -22,7 +22,9 @@ var _ = Describe("Console", func() {
 		console.Init(true)
 	})
 
-	Context("console in Debug Mode", func() {
+	XContext("console in Debug Mode", func() {
+
+		// How to evaluate output to stdout?
 
 		It("should log to stdout", func() {
 			console.Log("Testing %d, %d, %d: %s", 1, 2, 3, "mike check")
@@ -48,7 +50,9 @@ var _ = Describe("Console", func() {
 
 	})
 
-	Context("console not in Debug Mode", func() {
+	XContext("console not in Debug Mode", func() {
+
+		// How to evaluate output to stdout?
 
 		BeforeEach(func() {
 			console = new(Console)

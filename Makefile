@@ -10,7 +10,7 @@ fmt:
 	gofmt -w .
 
 test:
-	ginkgo -r
+	ginkgo -r -v
 
 .PHONY:
 	deps fmt test
