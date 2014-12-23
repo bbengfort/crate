@@ -1,16 +1,21 @@
 # Shell to use with Make
 SHELL := /bin/sh
 
+all: fmt deps
+	@echo "Building"
+	@mkdir -p bin/
+	@go build -v -o bin/crate .
+
 deps:
 	@echo "Fetching Dependencies"
-	@echo "Not implemented yet"
+	@go get -d -v ./crate/...
 
 fmt:
 	@echo "Formatting"
 	gofmt -w .
 
-test:
+test: deps
 	ginkgo -r -v
 
 .PHONY:
-	deps fmt test
+	all deps fmt test
