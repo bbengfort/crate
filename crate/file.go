@@ -3,6 +3,7 @@
 package crate
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -81,10 +82,12 @@ func (node *Node) IsHidden() bool {
 		return false
 	}
 
-	// console := &Console{true}
-	// console.Info("%s", stat.Name())
+	name := stat.Name()
+	if name == "." || name == ".." {
+		return false
+	}
 
-	return strings.HasPrefix(stat.Name(), ".")
+	return strings.HasPrefix(name, ".")
 }
 
 func (node *Node) Stat() (os.FileInfo, error) {
@@ -157,6 +160,7 @@ func (dir *Dir) List() ([]Path, error) {
 func (dir *Dir) Walk(walkFn WalkFunc) error {
 
 	return filepath.Walk(dir.Path, func(path string, finfo os.FileInfo, err error) error {
+		fmt.Println(path)
 		if finfo.IsDir() {
 			node := new(Dir)
 			node.Path = path

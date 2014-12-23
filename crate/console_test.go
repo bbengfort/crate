@@ -1,39 +1,66 @@
-// Testing for the helper console
+// TODO: Find way to test stdout
 
-package crate
+package crate_test
 
 import (
+	. "github.com/bbengfort/crate/crate"
+
+	. "github.com/onsi/ginkgo"
+	// . "github.com/onsi/gomega"
+
 	"errors"
 )
 
-func ExampleConsoleLog() {
-	console := &Console{true}
-	console.Log("Testing %d, %d, %d: %s", 1, 2, 3, "mike check")
+var _ = Describe("Console", func() {
 
-	// Output:
-	// Testing 1, 2, 3: mike check
-}
+	var (
+		console *Console
+	)
 
-func ExampleInfoDebug() {
-	console := &Console{true}
-	console.Info("The %s in %s falls gently on the %s.", "rain", "Spain", "plane")
+	BeforeEach(func() {
+		console = new(Console)
+		console.Init(true)
+	})
 
-	// Output:
-	// The rain in Spain falls gently on the plane.
-}
+	Context("console in Debug Mode", func() {
 
-func ExampleInfoDebugSupress() {
-	console := &Console{false}
-	console.Info("The %s in %s falls gently on the %s.", "rain", "Spain", "plane")
+		It("should log to stdout", func() {
+			console.Log("Testing %d, %d, %d: %s", 1, 2, 3, "mike check")
 
-	// Output:
-}
+			// Output:
+			// Testing 1, 2, 3: mike check
+		})
 
-func ExampleError() {
-	console := &Console{true}
-	err := errors.New("something bad happened")
-	console.Err("errcode %d", err, 500)
+		It("should print info to stdout", func() {
+			console.Info("The %s in %s falls gently on the %s.", "rain", "Spain", "plane")
 
-	// Output:
-	// ERROR (errcode 500): something bad happened
-}
+			// Output:
+			// The rain in Spain falls gently on the plane.
+		})
+
+		It("should prefix errors with an error code", func() {
+			err := errors.New("something bad happened")
+			console.Err("errcode %d", err, 500)
+
+			// Output:
+			// ERROR (errcode 500): something bad happened
+		})
+
+	})
+
+	Context("console not in Debug Mode", func() {
+
+		BeforeEach(func() {
+			console = new(Console)
+			console.Init(false)
+		})
+
+		It("should supress info statements", func() {
+			console.Info("The %s in %s falls gently on the %s.", "rain", "Spain", "plane")
+
+			// Output:
+		})
+
+	})
+
+})

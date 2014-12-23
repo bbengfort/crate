@@ -4,7 +4,7 @@ package main
 
 import (
 	"github.com/bbengfort/crate/crate"
-	"github.com/bbengfort/crate/version"
+	"github.com/bbengfort/crate/crate/version"
 	"path/filepath"
 )
 
@@ -26,17 +26,12 @@ func main() {
 		console.Info("Subdirectory = %s", dir.Join("path", "to", "a", "subdir"))
 
 		dir.Walk(func(path crate.Path, err error) error {
-
 			if err != nil {
 				return err
 			}
 
-			// if !path.IsHidden() {
-			// 	console.Info("%s", path)
-			// }
-
-			if !path.Dir().IsHidden() {
-				console.Info("%s", path.Dir())
+			if path.Dir().IsHidden() {
+				console.Info("testing dir %s hiddeen on %s", path.Dir(), path)
 				return filepath.SkipDir
 			}
 

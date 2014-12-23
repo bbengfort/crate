@@ -10,8 +10,7 @@ fmt:
 	gofmt -w .
 
 test:
-	go test -v ./crate/...
-	- go test -v ./version/...
+	ginkgo -r
 
 .PHONY:
 	deps fmt test

@@ -1,21 +1,32 @@
-// Testing for the file and directory handling module
-
-package crate
+package crate_test
 
 import (
-	"testing"
+	. "github.com/bbengfort/crate/crate"
+
+	. "github.com/onsi/ginkgo"
+	// . "github.com/onsi/gomega"
 )
 
-func TestNodeInterface(t *testing.T) {
-	var _ Path = &Node{}
-}
+var _ = Describe("File", func() {
 
-func TestFileMetaInterface(t *testing.T) {
-	var _ Path = &FileMeta{}
-	var _ FilePath = &FileMeta{}
-}
+	Describe("Node", func() {
+		It("should be a Path", func() {
+			var _ Path = &Node{}
+		})
+	})
 
-func TestDirInterface(t *testing.T) {
-	var _ Path = &Dir{}
-	var _ DirPath = &Dir{}
-}
+	Describe("FileMeta", func() {
+		It("should be a Path and a FilePath", func() {
+			var _ Path = &FileMeta{}
+			var _ FilePath = &FileMeta{}
+		})
+	})
+
+	Describe("Dir", func() {
+		It("should be a Path and a DirPath", func() {
+			var _ Path = &Dir{}
+			var _ DirPath = &Dir{}
+		})
+	})
+
+})
