@@ -12,17 +12,21 @@ import (
 	"github.com/rakyll/magicmime"
 )
 
+var Magic *magicmime.Magic
+
 //=============================================================================
+
+func InitMagic() {
+	Magic, _ = magicmime.New(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR)
+}
 
 // Use libmagic to determine the MimeType of the file
 func MimeType(path string) (string, error) {
-	mm, err := magicmime.New(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR)
-	if err != nil {
-		return "", err
+	if Magic == nil {
+		InitMagic()
 	}
 
-	defer mm.Close()
-	return mm.TypeByFile(path)
+	return Magic.TypeByFile(path)
 }
 
 // Compute the Base64 encoded SHA1 hash of the data
