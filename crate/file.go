@@ -3,6 +3,7 @@
 package crate
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -21,9 +22,10 @@ type Path interface {
 	IsDir() bool                // Path is a directory
 	IsFile() bool               // Path is a file
 	IsHidden() bool             // Path is a hidden file or directory
-	String() string             // The string representation of the file
 	Dir() *Dir                  // The parent directory of the path
 	Stat() (os.FileInfo, error) // Returns the attributes of the path
+	String() string             // The string representation of the file
+	Byte() []byte               // The byte representation of the JSON
 }
 
 type FilePath interface {
@@ -60,6 +62,20 @@ func NewPath(path string) (Path, error) {
 		node.Path = path
 		return node, nil
 	}
+}
+
+// Check if a string pathname exists (prerequsite to NewPath)
+func PathExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+
+		return false, err
+	}
+
+	return true, nil
 }
 
 //=============================================================================
@@ -105,6 +121,15 @@ func (node *Node) String() string {
 	return node.Path
 }
 
+func (node *Node) Byte() []byte {
+	data, err := json.Marshal(node)
+	if err != nil {
+		return nil
+	}
+
+	return data
+}
+
 //=============================================================================
 
 type FileMeta struct {
@@ -117,6 +142,15 @@ func (fm *FileMeta) Ext() string {
 
 func (fm *FileMeta) Base() string {
 	return filepath.Base(fm.Path)
+}
+
+func (fm *FileMeta) Byte() []byte {
+	data, err := json.Marshal(fm)
+	if err != nil {
+		return nil
+	}
+
+	return data
 }
 
 //=============================================================================
@@ -175,4 +209,13 @@ func (dir *Dir) Walk(walkFn WalkFunc) error {
 		return nil
 	})
 
+}
+
+func (dir *Dir) Byte() []byte {
+	data, err := json.Marshal(dir)
+	if err != nil {
+		return nil
+	}
+
+	return data
 }

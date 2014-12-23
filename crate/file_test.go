@@ -63,6 +63,11 @@ var _ = Describe("File", func() {
 		Ω(testDir).Should(BeAssignableToTypeOf(dirPath))
 	})
 
+	It("should tell if a path exists or not", func() {
+		Ω(PathExists(filepath.Join(testRoot, "foo", "bar"))).Should(BeTrue())
+		Ω(PathExists(filepath.Join(testRoot, "foo", "baz"))).Should(BeFalse())
+	})
+
 	Describe("Initialization", func() {
 		// Test the NewPath function
 
@@ -83,7 +88,6 @@ var _ = Describe("File", func() {
 			Ω(path).Should(BeNil())
 			Ω(err).Should(HaveOccurred())
 		})
-
 	})
 
 	Describe("Node", func() {
