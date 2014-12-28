@@ -48,6 +48,7 @@ func main() {
 			}
 
 			console.Log("Path %s is a %s", fm, mtype)
+			console.Log("Info:\n%s", fm.Info())
 
 		} else if dir, ok := path.(*crate.Dir); ok {
 			// Otherwise walk the directory for stats about it

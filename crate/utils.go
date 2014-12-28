@@ -12,6 +12,9 @@ import (
 	"github.com/rakyll/magicmime"
 )
 
+const UnknownHost = "unknown"
+
+var hostname string
 var Magic *magicmime.Magic
 
 //=============================================================================
@@ -34,6 +37,19 @@ func Hash(data []byte) string {
 	hasher := sha1.New()
 	hasher.Write(data)
 	return base64.StdEncoding.EncodeToString(hasher.Sum(nil))
+}
+
+// Return the hostname of the machine
+func Hostname() string {
+	var err error
+	if hostname == "" {
+		hostname, err = os.Hostname()
+		if err != nil {
+			hostname = UnknownHost
+		}
+	}
+
+	return hostname
 }
 
 //=============================================================================

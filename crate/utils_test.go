@@ -32,4 +32,8 @@ var _ = Describe("Utils", func() {
 		os.Remove(testfile.Name())
 	})
 
+	It("should be able to identify the hostname of the computer", func() {
+		Ω(Hostname()).ShouldNot(BeZero())
+	})
+
 })
