@@ -18,6 +18,8 @@ import (
 	"time"
 )
 
+const Anonymous = "anonymous"
+
 //=============================================================================
 
 // A file system entity
@@ -190,6 +192,8 @@ func (fm *FileMeta) Populate() {
 
 	if user, err := fm.User(); err == nil {
 		fm.Author = user.Name
+	} else {
+		fm.Author = Anonymous
 	}
 
 	fm.Host = Hostname()
