@@ -183,13 +183,13 @@ var _ = Describe("File", func() {
 
 		It("should be populated", func() {
 			fpath.Populate()
-			Ω(fpath.MimeType).ShouldNot(BeZero())
-			Ω(fpath.Name).ShouldNot(BeZero())
-			Ω(fpath.Size).ShouldNot(BeZero())
-			Ω(fpath.Modified).ShouldNot(BeZero())
-			Ω(fpath.Signature).ShouldNot(BeZero())
-			Ω(fpath.Host).ShouldNot(BeZero())
-			Ω(fpath.Author).ShouldNot(BeZero())
+			Ω(fpath.MimeType).ShouldNot(BeZero(), "MimeType must be populated")
+			Ω(fpath.Name).ShouldNot(BeZero(), "Name must be populated")
+			Ω(fpath.Size).ShouldNot(BeZero(), "Size must be populated")
+			Ω(fpath.Modified).ShouldNot(BeZero(), "Modified must be populated")
+			Ω(fpath.Signature).ShouldNot(BeZero(), "Signature must be populated")
+			Ω(fpath.Host).ShouldNot(BeZero(), "Host must be populated")
+			Ω(fpath.Author).ShouldNot(BeZero(), "Author must be populated")
 		})
 	})
 
