@@ -191,7 +191,11 @@ func (fm *FileMeta) Populate() {
 	}
 
 	if user, err := fm.User(); err == nil {
-		fm.Author = user.Name
+		if user.Name != "" {
+			fm.Author = user.Name
+		} else {
+			fm.Author = user.Username
+		}
 	} else {
 		fm.Author = Anonymous
 	}
