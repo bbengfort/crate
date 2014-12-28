@@ -41,14 +41,7 @@ func main() {
 		}
 
 		if fm, ok := path.(*crate.FileMeta); ok {
-			// Handle a file passed (just report the mimetype)
-			mtype, err := crate.MimeType(fm.Path)
-			if err != nil {
-				console.Fatal("Could not magic type: %s", err)
-			}
-
-			console.Log("Path %s is a %s", fm, mtype)
-			console.Log("Info:\n%s", fm.Info())
+			console.Log(fm.Info())
 
 		} else if dir, ok := path.(*crate.Dir); ok {
 			// Otherwise walk the directory for stats about it

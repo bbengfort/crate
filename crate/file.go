@@ -172,14 +172,15 @@ func (node *Node) Byte() []byte {
 
 type FileMeta struct {
 	Node
-	MimeType  string    // The mimetype of the file
-	Name      string    // The base name of the file
-	Size      int64     // The size of the file in bytes
-	Modified  time.Time // The last modified time
-	Signature string    // Base64 encoded SHA1 hash of the file
-	Host      string    // The hostname of the computer
-	Author    string    // The User or username of the file creator
-	populated bool      // Indicates if the FileMeta has been populated
+	MimeType  string            // The mimetype of the file
+	Name      string            // The base name of the file
+	Size      int64             // The size of the file in bytes
+	Modified  time.Time         // The last modified time
+	Signature string            // Base64 encoded SHA1 hash of the file
+	Host      string            // The hostname of the computer
+	Author    string            // The User or username of the file creator
+	Exif      map[string]string // Exif Data for JPEG
+	populated bool              // Indicates if the FileMeta has been populated
 }
 
 func (fm *FileMeta) Populate() {
@@ -203,6 +204,7 @@ func (fm *FileMeta) Populate() {
 	fm.Host = Hostname()
 	fm.MimeType, _ = MimeType(fm.Path)
 	fm.Signature, _ = fm.Hash()
+	fm.Exif = fm.GetExif()
 	fm.populated = true
 }
 

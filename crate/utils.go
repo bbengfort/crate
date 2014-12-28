@@ -7,6 +7,7 @@ import (
 	"encoding/base64"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 
 	"github.com/rakyll/magicmime"
@@ -50,6 +51,15 @@ func Hostname() string {
 	}
 
 	return hostname
+}
+
+// Convert a Float to a string
+func Ftoa(num float64) string {
+	if num == 0.0 {
+		return ""
+	}
+
+	return strconv.FormatFloat(num, 'f', -1, 64)
 }
 
 //=============================================================================

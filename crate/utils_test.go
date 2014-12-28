@@ -36,4 +36,18 @@ var _ = Describe("Utils", func() {
 		Ω(Hostname()).ShouldNot(BeZero())
 	})
 
+	Describe("Ftoa", func() {
+
+		It("should convert a 0 float to a null string", func() {
+			var num float64 // zero value float
+			Ω(Ftoa(num)).Should(BeZero())
+		})
+
+		It("Should convert a float to a string value", func() {
+			num := 3.144512341234412
+			Ω(Ftoa(num)).Should(Equal("3.144512341234412"))
+		})
+
+	})
+
 })
