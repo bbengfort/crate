@@ -39,10 +39,11 @@ type Path interface {
 }
 
 type FilePath interface {
-	Ext() string  // The extension (if a file, empty string if not)
-	Base() string // The base name of the path
-	Populate()    // Populates the info on the file path (does a lot of work)
-	Info() string // Returns a JSON serialized print of the file info
+	IsImage() bool // The File is an image
+	Ext() string   // The extension (if a file, empty string if not)
+	Base() string  // The base name of the path
+	Populate()     // Populates the info on the file path (does a lot of work)
+	Info() string  // Returns a JSON serialized print of the file info
 }
 
 type DirPath interface {
@@ -172,17 +173,26 @@ func (node *Node) Byte() []byte {
 
 type FileMeta struct {
 	Node
-	MimeType  string            // The mimetype of the file
-	Name      string            // The base name of the file
-	Size      int64             // The size of the file in bytes
-	Modified  time.Time         // The last modified time
-	Signature string            // Base64 encoded SHA1 hash of the file
-	Host      string            // The hostname of the computer
-	Author    string            // The User or username of the file creator
-	Exif      map[string]string // Exif Data for JPEG
-	populated bool              // Indicates if the FileMeta has been populated
+	MimeType  string    // The mimetype of the file
+	Name      string    // The base name of the file
+	Size      int64     // The size of the file in bytes
+	Modified  time.Time // The last modified time
+	Signature string    // Base64 encoded SHA1 hash of the file
+	Host      string    // The hostname of the computer
+	Author    string    // The User or username of the file creator
+	populated bool      // Indicates if the FileMeta has been populated
 }
 
+// Checks if a FileMeta is an image
+func (fm *FileMeta) IsImage() bool {
+	if fm.MimeType == "" {
+		fm.MimeType, _ = MimeType(fm.Path)
+	}
+
+	return strings.HasPrefix(fm.MimeType, "image/")
+}
+
+// Populates the fields on the FileMeta
 func (fm *FileMeta) Populate() {
 
 	if fi, err := fm.Stat(); err == nil {
@@ -204,7 +214,6 @@ func (fm *FileMeta) Populate() {
 	fm.Host = Hostname()
 	fm.MimeType, _ = MimeType(fm.Path)
 	fm.Signature, _ = fm.Hash()
-	fm.Exif = fm.GetExif()
 	fm.populated = true
 }
 

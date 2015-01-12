@@ -4,33 +4,41 @@ package crate
 
 import (
 	"os"
-	"strings"
+	"time"
 
 	"github.com/rwcarlsen/goexif/exif"
 	"github.com/rwcarlsen/goexif/mknote"
+	"github.com/rwcarlsen/goexif/tiff"
 )
 
-// Checks if a FileMeta is an image
-func (fm *FileMeta) IsImage() bool {
-	if fm.MimeType == "" {
-		fm.MimeType, _ = MimeType(fm.Path)
-	}
-
-	return strings.HasPrefix(fm.MimeType, "image/")
-}
+//=============================================================================
 
 // Checks if an Image is a JPEG file
-func (fm *FileMeta) IsJPEG() bool {
-	if fm.IsImage() {
-		return fm.MimeType == "image/jpeg"
+func (img *ImageMeta) IsJPEG() bool {
+	if img.IsImage() {
+		return img.MimeType == "image/jpeg"
 	}
 
 	return false
 }
 
-// Quick helper function
-func GetExifString(x *exif.Exif, tag exif.FieldName) string {
-	val, _ := x.Get(tag)
+//=============================================================================
+
+// Implements the Walker interface to retrieve all tags
+type ExifHandler struct {
+	exif *exif.Exif        // The Exif struct being walked
+	tags map[string]string // Tags
+}
+
+// Implements the Walk function to be a Walker
+func (ew *ExifHandler) Walk(name exif.FieldName, tag *tiff.Tag) error {
+	ew.tags[string(name)] = tag.String()
+	return nil
+}
+
+// Retrieves a tag from the exif data in the handler
+func (ew *ExifHandler) Get(tag exif.FieldName) string {
+	val, _ := ew.exif.Get(tag)
 	if val != nil {
 		return val.String()
 	}
@@ -38,27 +46,40 @@ func GetExifString(x *exif.Exif, tag exif.FieldName) string {
 	return ""
 }
 
-// Get the EXIF Data from the JPEG
-func (fm *FileMeta) GetExif() map[string]string {
-	data := make(map[string]string)
+// Helper function for the date taken
+func (ew *ExifHandler) DateTaken() (time.Time, error) {
+	return ew.exif.DateTime()
+}
 
-	if !fm.IsJPEG() {
-		return data
+// Helper function for the GPS Coordinates
+func (ew *ExifHandler) Coordinates() (float64, float64, error) {
+	return ew.exif.LatLong()
+}
+
+//=============================================================================
+
+// Get the EXIF Data from the JPEG
+func (img *ImageMeta) GetExif() *ExifHandler {
+
+	// Ensure that this is a JPEG
+	if !img.IsJPEG() {
+		return nil
 	}
 
-	if f, err := os.Open(fm.Path); err == nil {
+	if f, err := os.Open(img.Path); err == nil {
 		defer f.Close()
 		exif.RegisterParsers(mknote.All...)
 
+		walker := new(ExifHandler)
+		walker.tags = make(map[string]string)
+
 		if x, err := exif.Decode(f); err == nil {
-			data["CameraModel"] = GetExifString(x, exif.Model)
-			dt, _ := x.DateTime()
-			data["DateTaken"] = dt.String()
-			lat, lon, _ := x.LatLong()
-			data["Latitude"] = Ftoa(lat)
-			data["Longitude"] = Ftoa(lon)
+			walker.exif = x
+			x.Walk(walker)
+
+			return walker
 		}
 	}
 
-	return data
+	return nil
 }

@@ -41,12 +41,18 @@ func main() {
 		}
 
 		if fm, ok := path.(*crate.FileMeta); ok {
-			console.Log(fm.Info())
+
+			if img, ok := crate.ConvertImageMeta(fm); ok {
+				console.Log(img.Info())
+			} else {
+				console.Log(fm.Info())
+			}
 
 		} else if dir, ok := path.(*crate.Dir); ok {
 			// Otherwise walk the directory for stats about it
 
 			files := make(map[string]int)
+			tags := make(map[string]int)
 
 			dir.Walk(func(path crate.Path, err error) error {
 				if err != nil {
@@ -61,13 +67,31 @@ func main() {
 				if path.IsFile() && !path.IsHidden() {
 					mtype, _ := crate.MimeType(path.String())
 					files[mtype] += 1
+
+					if img, ok := path.(*crate.ImageMeta); ok {
+						console.Log("found an image!")
+						if img.IsJPEG() {
+							img.Populate()
+							for key, _ := range img.Tags {
+								tags[key] += 1
+							}
+						}
+					} else if _, ok := path.(*crate.FileMeta); ok {
+						console.Log("found a file meta")
+					}
 				}
 
 				return nil
 
 			})
 
+			console.Log("File Mimetypes")
 			for k, v := range files {
+				console.Log("%d: %s", v, k)
+			}
+
+			console.Log("\n\nJPEG Tags")
+			for k, v := range tags {
 				console.Log("%d: %s", v, k)
 			}
 
