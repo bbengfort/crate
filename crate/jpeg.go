@@ -4,6 +4,7 @@ package crate
 
 import (
 	"os"
+	"strings"
 	"time"
 
 	"github.com/rwcarlsen/goexif/exif"
@@ -40,7 +41,7 @@ func (ew *ExifHandler) Walk(name exif.FieldName, tag *tiff.Tag) error {
 func (ew *ExifHandler) Get(tag exif.FieldName) string {
 	val, _ := ew.exif.Get(tag)
 	if val != nil {
-		return val.String()
+		return strings.Trim(val.String(), "\"")
 	}
 
 	return ""
@@ -59,11 +60,11 @@ func (ew *ExifHandler) Coordinates() (float64, float64, error) {
 //=============================================================================
 
 // Get the EXIF Data from the JPEG
-func (img *ImageMeta) GetExif() *ExifHandler {
+func (img *ImageMeta) GetExif() (*ExifHandler, bool) {
 
 	// Ensure that this is a JPEG
 	if !img.IsJPEG() {
-		return nil
+		return nil, false
 	}
 
 	if f, err := os.Open(img.Path); err == nil {
@@ -77,9 +78,9 @@ func (img *ImageMeta) GetExif() *ExifHandler {
 			walker.exif = x
 			x.Walk(walker)
 
-			return walker
+			return walker, true
 		}
 	}
 
-	return nil
+	return nil, false
 }

@@ -68,16 +68,13 @@ func main() {
 					mtype, _ := crate.MimeType(path.String())
 					files[mtype] += 1
 
-					if img, ok := path.(*crate.ImageMeta); ok {
-						console.Log("found an image!")
+					if img, ok := crate.ConvertImageMeta(path.(*crate.FileMeta)); ok {
 						if img.IsJPEG() {
 							img.Populate()
 							for key, _ := range img.Tags {
 								tags[key] += 1
 							}
 						}
-					} else if _, ok := path.(*crate.FileMeta); ok {
-						console.Log("found a file meta")
 					}
 				}
 

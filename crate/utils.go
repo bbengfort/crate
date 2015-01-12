@@ -9,14 +9,20 @@ import (
 	"os/signal"
 	"strconv"
 	"syscall"
+	"time"
 
 	"github.com/rakyll/magicmime"
 )
 
-const UnknownHost = "unknown"
+const (
+	UnknownHost = "unknown"
+	JSONLayout  = "2006-01-02T15:04:05-07:00"
+)
 
-var hostname string
-var Magic *magicmime.Magic
+var (
+	hostname string
+	Magic    *magicmime.Magic
+)
 
 //=============================================================================
 
@@ -60,6 +66,15 @@ func Ftoa(num float64) string {
 	}
 
 	return strconv.FormatFloat(num, 'f', -1, 64)
+}
+
+// Convert a time.Time to a JSON timestamp
+func JSONStamp(t time.Time) string {
+	if !t.IsZero() {
+		return t.Format(JSONLayout)
+	}
+
+	return ""
 }
 
 //=============================================================================

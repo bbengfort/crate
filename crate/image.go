@@ -44,9 +44,21 @@ func (img *ImageMeta) Populate() {
 		img.Height = height
 	}
 
-	exif := img.GetExif()
-	if exif != nil {
-		img.Tags = exif.tags
+	img.Tags = make(map[string]string)
+	if exif, ok := img.GetExif(); ok {
+		// Get the date taken time stamp
+		dt, _ := exif.DateTaken()
+		img.Tags["DateTaken"] = JSONStamp(dt)
+
+		// Get the GPS data for the image
+		latitude, longitude, _ := exif.Coordinates()
+		img.Tags["Latitude"] = Ftoa(latitude)
+		img.Tags["Longitude"] = Ftoa(longitude)
+
+		// Get the Camera information
+		img.Tags["CameraMake"] = exif.Get("Make")
+		img.Tags["CameraModel"] = exif.Get("Model")
+		img.Tags["Software"] = exif.Get("Software")
 	}
 }
 

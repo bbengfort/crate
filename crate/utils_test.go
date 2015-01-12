@@ -3,6 +3,7 @@ package crate_test
 import (
 	"io/ioutil"
 	"os"
+	"time"
 
 	. "github.com/bbengfort/crate/crate"
 
@@ -48,6 +49,13 @@ var _ = Describe("Utils", func() {
 			Ω(Ftoa(num)).Should(Equal("3.144512341234412"))
 		})
 
+	})
+
+	It("should be able to convert a time to a JSON representation", func() {
+		lt := "Mon Jan 2 15:04:05 -0700 MST 2006"
+		dt, _ := time.Parse(lt, "Mon Jan 12 16:51:19 -0500 EST 2015")
+
+		Ω(JSONStamp(dt)).Should(Equal("2015-01-12T16:51:19-05:00"))
 	})
 
 })
