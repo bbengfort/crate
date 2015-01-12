@@ -26,13 +26,13 @@ func ConvertImageMeta(fm *FileMeta) (*ImageMeta, bool) {
 
 	// If this isn't an image, then return nil
 	if !fm.IsImage() {
-		return nil, False
+		return nil, false
 	}
 
 	img := new(ImageMeta)
 	img.FileMeta = *fm
 
-	return img, True
+	return img, true
 }
 
 // Popluates the fields on the ImageMeta
@@ -44,7 +44,10 @@ func (img *ImageMeta) Populate() {
 		img.Height = height
 	}
 
-	img.Tags = img.GetExif().tags
+	exif := img.GetExif()
+	if exif != nil {
+		img.Tags = exif.tags
+	}
 }
 
 // Returns the width, hight of the image
