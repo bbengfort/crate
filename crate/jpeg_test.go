@@ -99,8 +99,11 @@ var _ = Describe("Jpeg", func() {
 		Ω(ok).Should(BeTrue())
 		Ω(exif).ShouldNot(BeNil())
 
-		taken, _ := time.Parse("2006-01-02T15:04:05-07:00", "2015-01-05T12:57:30-05:00")
-		Ω(exif.DateTaken()).Should(Equal(taken))
+		taken, _ := time.Parse("2006-01-02T15:04:05-07:00", "2015-01-05T17:57:30+00:00")
+		original, err := exif.DateTaken()
+
+		Ω(err).Should(BeNil())
+		Ω(original.UTC()).Should(Equal(taken.UTC()))
 	})
 
 	It("should be able to extract the GPS coordinates", func() {
