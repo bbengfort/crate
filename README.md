@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/bbengfort/crate.png?label=ready&title=Ready)](https://waffle.io/bbengfort/crate)
 # Crate [![Build Status][travis_img]][travis_href]
 
 **File archival and meta data synchronization tool (experimental)**
