@@ -23,6 +23,32 @@ func (img *ImageMeta) IsJPEG() bool {
 	return false
 }
 
+// Get the EXIF Data from the JPEG
+func (img *ImageMeta) GetExif() (*ExifHandler, bool) {
+
+	// Ensure that this is a JPEG
+	if !img.IsJPEG() {
+		return nil, false
+	}
+
+	if f, err := os.Open(img.Path); err == nil {
+		defer f.Close()
+		exif.RegisterParsers(mknote.All...)
+
+		walker := new(ExifHandler)
+		walker.tags = make(map[string]string)
+
+		if x, err := exif.Decode(f); err == nil {
+			walker.exif = x
+			x.Walk(walker)
+
+			return walker, true
+		}
+	}
+
+	return nil, false
+}
+
 //=============================================================================
 
 // Implements the Walker interface to retrieve all tags
@@ -58,29 +84,3 @@ func (ew *ExifHandler) Coordinates() (float64, float64, error) {
 }
 
 //=============================================================================
-
-// Get the EXIF Data from the JPEG
-func (img *ImageMeta) GetExif() (*ExifHandler, bool) {
-
-	// Ensure that this is a JPEG
-	if !img.IsJPEG() {
-		return nil, false
-	}
-
-	if f, err := os.Open(img.Path); err == nil {
-		defer f.Close()
-		exif.RegisterParsers(mknote.All...)
-
-		walker := new(ExifHandler)
-		walker.tags = make(map[string]string)
-
-		if x, err := exif.Decode(f); err == nil {
-			walker.exif = x
-			x.Walk(walker)
-
-			return walker, true
-		}
-	}
-
-	return nil, false
-}
