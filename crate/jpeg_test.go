@@ -94,17 +94,37 @@ var _ = Describe("Jpeg", func() {
 		Ω(exif.Get("Model")).Should(Equal("Nexus 5"))
 	})
 
-	XIt("should be able to extract the date taken", func() {
-		// TODO: Figure out how to get this working in Travis
+	It("should be able to extract the date taken from GPS", func() {
 		exif, ok := coast.GetExif()
 		Ω(ok).Should(BeTrue())
 		Ω(exif).ShouldNot(BeNil())
 
-		taken, _ := time.Parse("2006-01-02T15:04:05-07:00", "2015-01-05T17:57:30+00:00")
+		gpsts, err := exif.GPSDateTime()
+		Ω(err).Should(BeNil())
+		Ω(gpsts).ShouldNot(BeZero())
+
+		taken, _ := time.Parse("2006-01-02T15:04:05-07:00", "2015-01-05T09:57:20+00:00")
 		original, err := exif.DateTaken()
 
 		Ω(err).Should(BeNil())
-		Ω(original.UTC()).Should(Equal(taken.UTC()))
+		Ω(original.UTC()).Should(Equal(taken.UTC()), "Date doesn't match %s vs %s", original.String(), taken.String())
+		Ω(original).Should(Equal(gpsts))
+	})
+
+	It("should be able to extract the date taken without GPS", func() {
+		exif, ok := ferry.GetExif()
+		Ω(ok).Should(BeTrue())
+		Ω(exif).ShouldNot(BeNil())
+
+		gpsts, err := exif.GPSDateTime()
+		Ω(err).ShouldNot(BeNil())
+		Ω(gpsts).Should(BeZero())
+
+		taken, _ := time.Parse("2006-01-02T15:04:05-07:00", "2013-10-26T15:52:44+00:00")
+		original, err := exif.DateTaken()
+
+		Ω(err).Should(BeNil())
+		Ω(original.UTC()).Should(Equal(taken.UTC()), "Date doesn't match %s vs %s", original.String(), taken.String())
 	})
 
 	It("should be able to extract the GPS coordinates", func() {
