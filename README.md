@@ -1,5 +1,4 @@
-[![Stories in Ready](https://badge.waffle.io/bbengfort/crate.png?label=ready&title=Ready)](https://waffle.io/bbengfort/crate)
-# Crate [![Build Status][travis_img]][travis_href]
+# Crate [![Build Status][travis_img]][travis_href] [![Stories in Ready][waffle_img]][waffle_href]
 
 **File archival and meta data synchronization tool (experimental)**
 
@@ -56,6 +55,8 @@ Crate does a lot of work on Images, and so it's only fair to specify the attribu
 
 [travis_img]: https://travis-ci.org/bbengfort/crate.svg
 [travis_href]: https://travis-ci.org/bbengfort/crate
+[waffle_img]: https://badge.waffle.io/bbengfort/crate.png?label=ready&title=Ready
+[waffle_href]: https://waffle.io/bbengfort/crate
 [crate.jpg]: fixtures/crate.jpg
 [cli]: https://github.com/codegangsta/cli
 [ginkgo]: https://github.com/onsi/ginkgo
