@@ -12,6 +12,8 @@ install:
   - go get -v github.com/onsi/ginkgo/ginkgo
   - go get -v github.com/onsi/gomega
   - go get -v github.com/rakyll/magicmime
+  - go get gopkg.in/yaml.v2
+  - go get github.com/mitchellh/go-homedir
   - go get -v -d ./...
   - export PATH=$PATH:$HOME/gopath/bin
 
