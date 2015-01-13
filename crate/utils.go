@@ -71,7 +71,7 @@ func Ftoa(num float64) string {
 // Convert a time.Time to a JSON timestamp
 func JSONStamp(t time.Time) string {
 	if !t.IsZero() {
-		return t.Format(JSONLayout)
+		return t.UTC().Format(JSONLayout)
 	}
 
 	return ""
