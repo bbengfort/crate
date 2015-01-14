@@ -3,7 +3,6 @@
 package config
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -190,7 +189,7 @@ func InitializeConfigFile(path string) error {
 
 	// Don't overwrite existing config file
 	if exists {
-		return errors.New("Cannot create config file and overwrite existing one!")
+		return nil
 	}
 
 	// Create a new default config and write to path

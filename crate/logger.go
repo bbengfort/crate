@@ -5,8 +5,10 @@
 package crate
 
 import (
+	"fmt"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/bbengfort/crate/crate/config"
@@ -37,6 +39,26 @@ var levels = [...]string{
 
 func (level LogLevel) String() string {
 	return levels[level-1]
+}
+
+func LevelFromString(level string) LogLevel {
+	level = strings.ToUpper(level)
+	level = strings.Trim(level, " ")
+
+	switch level {
+	case "DEBUG":
+		return LevelDebug
+	case "INFO":
+		return LevelInfo
+	case "WARNING":
+		return LevelWarn
+	case "ERROR":
+		return LevelError
+	case "FATAL":
+		return LevelFatal
+	default:
+		return LevelInfo
+	}
 }
 
 //=============================================================================
@@ -75,8 +97,8 @@ func CloseLoggers() error {
 }
 
 // Write a log message to the eventLogger at a certain log level
-func Log(msg string, level LogLevel) {
-	eventLogger.Log(msg, level)
+func Log(msg string, level LogLevel, args ...interface{}) {
+	eventLogger.Log(msg, level, args...)
 }
 
 //=============================================================================
@@ -100,35 +122,36 @@ func (logger *Logger) SetOutputPath(path string) error {
 }
 
 // Write a log message to the logger with a certain log level
-func (logger *Logger) Log(msg string, level LogLevel) {
+func (logger *Logger) Log(layout string, level LogLevel, args ...interface{}) {
 	// Log line format is "%(level)s [%(jsontime)s]: %(message)s"
 
 	if level >= logger.Level {
+		msg := fmt.Sprintf(layout, args...)
 		logger.writer.Printf("%-7s [%s]: %s\n", level, time.Now().Format(JSONLayout), msg)
 	}
 }
 
 // Helper function to log at debug level
-func (logger *Logger) Debug(msg string) {
-	logger.Log(msg, LevelDebug)
+func (logger *Logger) Debug(msg string, args ...interface{}) {
+	logger.Log(msg, LevelDebug, args...)
 }
 
 // Helper function to log at info level
-func (logger *Logger) Info(msg string) {
-	logger.Log(msg, LevelInfo)
+func (logger *Logger) Info(msg string, args ...interface{}) {
+	logger.Log(msg, LevelInfo, args...)
 }
 
 // Helper function to log at debug level
-func (logger *Logger) Warn(msg string) {
-	logger.Log(msg, LevelWarn)
+func (logger *Logger) Warn(msg string, args ...interface{}) {
+	logger.Log(msg, LevelWarn, args...)
 }
 
 // Helper function to log at debug level
-func (logger *Logger) Error(msg string) {
-	logger.Log(msg, LevelError)
+func (logger *Logger) Error(msg string, args ...interface{}) {
+	logger.Log(msg, LevelError, args...)
 }
 
 // Helper function to log at debug level
-func (logger *Logger) Fatal(msg string) {
-	logger.Log(msg, LevelFatal)
+func (logger *Logger) Fatal(msg string, args ...interface{}) {
+	logger.Log(msg, LevelFatal, args...)
 }

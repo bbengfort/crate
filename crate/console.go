@@ -11,6 +11,14 @@ var console *Console
 
 //=============================================================================
 
+func InitializeConsole() error {
+	console = new(Console)
+	console.Init(false)
+	return nil
+}
+
+//=============================================================================
+
 // Handles the writing to the console
 type Console struct {
 	debug bool

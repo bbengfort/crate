@@ -26,8 +26,10 @@ var (
 
 //=============================================================================
 
-func InitMagic() {
-	Magic, _ = magicmime.New(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR)
+func InitMagic() error {
+	var err error
+	Magic, err = magicmime.New(magicmime.MAGIC_MIME_TYPE | magicmime.MAGIC_SYMLINK | magicmime.MAGIC_ERROR)
+	return err
 }
 
 // Use libmagic to determine the MimeType of the file

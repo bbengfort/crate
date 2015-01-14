@@ -102,6 +102,11 @@ var _ = Describe("Config Paths", func() {
 		Ω(PathExists(expected)).Should(BeFalse())
 		Ω(CrateConfigPath()).Should(Equal(expected))
 		Ω(PathExists(expected)).Should(BeTrue())
+
+		// Ensure the config contains data
+		data, err := ioutil.ReadFile(expected)
+		Ω(err).Should(BeNil())
+		Ω(string(data)).ShouldNot(Equal(""))
 	})
 
 	It("should correctly get and initialize the crate logging directory but not the log file", func() {
@@ -130,10 +135,15 @@ var _ = Describe("Config Paths", func() {
 		// Create a stub config.yaml file that shouldn't be overwritten
 		Ω(os.Create(filepath.Join(path, "config.yaml"))).ShouldNot(BeZero())
 
-		// Attempt to get config path (errors expected)
+		// Attempt to get config path
 		path, err = CrateConfigPath()
-		Ω(path).Should(BeZero())
-		Ω(err).ShouldNot(BeNil())
+		Ω(path).ShouldNot(BeZero())
+		Ω(err).Should(BeNil())
+
+		// Ensure the empty file remained empty
+		data, err := ioutil.ReadFile(path)
+		Ω(err).Should(BeNil())
+		Ω(string(data)).Should(Equal(""))
 
 	})
 

@@ -14,6 +14,7 @@ import (
 type Config struct {
 	Debug  bool     `yaml:debug,omitempty`  // default false
 	Notify []string `yaml:notify,omitempty` // default []
+	Level  string   `yaml:level,omitempty`  // default INFO
 }
 
 //=============================================================================
@@ -27,6 +28,7 @@ func New() *Config {
 	// Set the default values
 	config.Debug = false
 	config.Notify = make([]string, 0, 0)
+	config.Level = "INFO"
 
 	return config
 }

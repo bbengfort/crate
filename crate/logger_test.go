@@ -95,4 +95,30 @@ var _ = Describe("Logger", func() {
 		Ω(string(data)).Should(MatchRegexp(logPattern))
 	})
 
+	It("should be able to convert a string to a LogLevel", func() {
+
+		Ω(LevelFromString("debug")).Should(Equal(LevelDebug))
+		Ω(LevelFromString("info")).Should(Equal(LevelInfo))
+		Ω(LevelFromString("warning")).Should(Equal(LevelWarn))
+		Ω(LevelFromString("error")).Should(Equal(LevelError))
+		Ω(LevelFromString("fatal")).Should(Equal(LevelFatal))
+		Ω(LevelFromString("")).Should(Equal(LevelInfo))
+
+	})
+
+	It("should be able to log with format", func() {
+		err := InitializeLoggers(LevelInfo)
+		Ω(err).Should(BeNil())
+		defer CloseLoggers()
+
+		Log("test message %d", LevelInfo, 1)
+		Ω(config.PathExists(logPath)).Should(BeTrue())
+
+		data, err := ioutil.ReadFile(logPath)
+		Ω(err).Should(BeNil())
+
+		logPattern := `INFO    \[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[-+]\d{2}:\d{2}\]: test message 1\n`
+		Ω(string(data)).Should(MatchRegexp(logPattern))
+	})
+
 })
