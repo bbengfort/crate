@@ -35,6 +35,10 @@ func main() {
 		crate.InitMagic()
 		defer crate.Magic.Close()
 
+		// Initialize the Database
+		crate.InitializeDatabase()
+		defer crate.CloseDatabase()
+
 		path, err := crate.NewPath(c.Args()[0])
 		if err != nil {
 			console.Fatal("Could not open path: %s (%s)", c.Args()[0], err)
@@ -44,8 +48,10 @@ func main() {
 
 			if img, ok := crate.ConvertImageMeta(fm); ok {
 				console.Log(img.Info())
+				img.Store()
 			} else {
 				console.Log(fm.Info())
+				fm.Store()
 			}
 
 		} else if dir, ok := path.(*crate.Dir); ok {

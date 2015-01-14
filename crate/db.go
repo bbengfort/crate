@@ -61,6 +61,7 @@ func (img *ImageMeta) Store() error {
 
 //=============================================================================
 
+// Fetch the FileMeta or ImageMeta from the specified hash
 func Fetch(key string) (FilePath, error) {
 
 	data, err := db.Get([]byte(key), nil)
@@ -90,4 +91,24 @@ func Fetch(key string) (FilePath, error) {
 
 	return meta, nil
 
+}
+
+// Return a slice of keys limited by the argument
+func FetchKeys(limit int) []string {
+
+	result := make([]string, 0, 0)
+	iter := db.NewIterator(nil, nil)
+	idx := 0
+
+	for iter.Next() {
+		result = append(result, string(iter.Key()))
+
+		idx++
+		if idx > limit {
+			break
+		}
+
+	}
+
+	return result
 }
