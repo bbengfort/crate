@@ -3,84 +3,69 @@
 package config
 
 import (
-	"os"
-	"path/filepath"
-	"runtime"
+	"errors"
+	"io/ioutil"
 
-	"github.com/mitchellh/go-homedir"
-	// "gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v2"
 )
 
-var cratePath string // Internal config path identifier
+//=============================================================================
+
+type Config struct {
+	Debug  bool     `yaml:debug,omitempty`  // default false
+	Notify []string `yaml:notify,omitempty` // default []
+}
 
 //=============================================================================
 
-// Helper function to check if a path exists on the file system
-func PathExists(path string) (bool, error) {
-	_, err := os.Stat(path)
+// Create a New Config with default values, one of two ways to create a config
+func New() *Config {
+
+	// Create the config struct
+	config := new(Config)
+
+	// Set the default values
+	config.Debug = false
+	config.Notify = make([]string, 0, 0)
+
+	return config
+}
+
+// Load a Config by loading a YAML file, second of two ways to create a config
+func Load(path string) (*Config, error) {
+
+	// Check to ensure that the path exists
+	if exists, _ := PathExists(path); !exists {
+		return nil, errors.New("No YAML config file at specified path")
+	}
+
+	// Load the file from the path
+	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		if os.IsNotExist(err) {
-			return false, nil
-		}
-
-		return false, err
+		return nil, err
 	}
 
-	return true, nil
+	// Unmarshall the YAML into a config object
+	config := New()
+	err = yaml.Unmarshal(data, &config)
+	if err != nil {
+		return nil, err
+	}
+
+	return config, nil
 }
 
 //=============================================================================
 
-// Figures out the configuration and data path and returns it or an error
-// Configuration and data are in the HOME directory of the current user
-func CrateDirectory() (string, error) {
+// Dump a Config to a YAML file, primary way of saving a config to disk
+func (conf *Config) Dump(path string) error {
 
-	// Cache the crate directory path
-	if cratePath == "" {
-
-		// Configure crate directory path with home directory and operating system
-		if homePath, err := homedir.Dir(); err == nil {
-
-			if runtime.GOOS == "windows" {
-				// Currently untested since I don't have windows
-				cratePath = filepath.Join(homePath, "AppData", "Roaming", "Crate")
-			} else {
-				cratePath = filepath.Join(homePath, ".crate")
-			}
-
-		} else {
-			return "", err
-		}
-
+	// Marshall the data to write to file
+	data, err := yaml.Marshal(conf)
+	if err != nil {
+		return err
 	}
 
-	// Ensure that the crate directory path exists and is initialized
-	if err := InitializeCrateDirectory(cratePath); err != nil {
-		cratePath = ""
-		return "", err
-	}
-
-	return cratePath, nil
+	return ioutil.WriteFile(path, data, 0644)
 
 }
-
-// Creates the Crate directory and initializes it with default files
-func InitializeCrateDirectory(path string) error {
-
-	// Check if the path does not exist already
-	if exists, err := PathExists(path); !exists {
-		if err != nil {
-			return err
-		}
-
-		// Create the crate directory at the specifed path
-		if err := os.Mkdir(path, 0755); err != nil {
-			return err
-		}
-
-	}
-
-	return nil
-}
-
-//=============================================================================
