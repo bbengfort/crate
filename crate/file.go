@@ -44,6 +44,7 @@ type FilePath interface {
 	Base() string  // The base name of the path
 	Populate()     // Populates the info on the file path (does a lot of work)
 	Info() string  // Returns a JSON serialized print of the file info
+	Store() error  // Store the meta data to a database
 }
 
 type DirPath interface {
@@ -177,6 +178,7 @@ type FileMeta struct {
 	Name      string    // The base name of the file
 	Size      int64     // The size of the file in bytes
 	Modified  time.Time // The last modified time
+	LastSeen  time.Time // The last time that Crate saw the file
 	Signature string    // Base64 encoded SHA1 hash of the file
 	Host      string    // The hostname of the computer
 	Author    string    // The User or username of the file creator
@@ -214,6 +216,7 @@ func (fm *FileMeta) Populate() {
 	fm.Host = Hostname()
 	fm.MimeType, _ = MimeType(fm.Path)
 	fm.Signature, _ = fm.Hash()
+	fm.LastSeen = time.Now()
 	fm.populated = true
 }
 
