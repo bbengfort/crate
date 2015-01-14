@@ -101,6 +101,7 @@ var _ = Describe("Db", func() {
 		defer CloseDatabase()
 
 		Ω(dracula.Store()).Should(BeNil())
+		Ω(FetchKeys(2)).Should(ContainElement(dracula.Signature))
 	})
 
 	It("should be able to store an imagemeta in the database", func() {
@@ -108,6 +109,7 @@ var _ = Describe("Db", func() {
 		defer CloseDatabase()
 
 		Ω(coast.Store()).Should(BeNil())
+		Ω(FetchKeys(2)).Should(ContainElement(coast.Signature))
 	})
 
 	It("should be able to fetch a filemeta in the database", func() {
@@ -136,6 +138,28 @@ var _ = Describe("Db", func() {
 		Ω(img.Width).ShouldNot(BeZero())
 		Ω(img.Height).ShouldNot(BeZero())
 		Ω(img.Tags).ShouldNot(BeZero())
+	})
+
+	It("should be able to fetch keys from the database", func() {
+		Ω(InitializeDatabase()).Should(BeNil())
+		defer CloseDatabase()
+
+		Ω(FetchKeys(100)).Should(BeEmpty())
+
+		Ω(coast.Store()).Should(BeNil())
+		Ω(dracula.Store()).Should(BeNil())
+
+		Ω(FetchKeys(100)).Should(HaveLen(2))
+	})
+
+	It("should be able to limit key fetch", func() {
+		Ω(InitializeDatabase()).Should(BeNil())
+		defer CloseDatabase()
+
+		Ω(coast.Store()).Should(BeNil())
+		Ω(dracula.Store()).Should(BeNil())
+
+		Ω(FetchKeys(1)).Should(HaveLen(1))
 	})
 
 })

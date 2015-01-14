@@ -104,7 +104,7 @@ func FetchKeys(limit int) []string {
 		result = append(result, string(iter.Key()))
 
 		idx++
-		if idx > limit {
+		if idx >= limit {
 			break
 		}
 
