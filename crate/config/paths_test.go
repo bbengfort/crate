@@ -104,6 +104,24 @@ var _ = Describe("Config Paths", func() {
 		Ω(PathExists(expected)).Should(BeTrue())
 	})
 
+	It("should correctly get and initialize the crate logging directory but not the log file", func() {
+		var logDir string
+		if runtime.GOOS == "windows" {
+			logDir = filepath.Join(testHome, "AppData", "Roaming", "Crate", "logs")
+		} else {
+			logDir = filepath.Join(testHome, ".crate", "logs")
+		}
+
+		logPath := filepath.Join(logDir, "events.log")
+
+		Ω(PathExists(logDir)).Should(BeFalse())
+		Ω(PathExists(logPath)).Should(BeFalse())
+
+		Ω(CrateLoggingPath()).Should(Equal(logPath))
+		Ω(PathExists(logDir)).Should(BeTrue())
+		Ω(PathExists(logPath)).ShouldNot(BeTrue())
+	})
+
 	It("should not overwite an existing crate configuration", func() {
 
 		path, err := CrateDirectory()

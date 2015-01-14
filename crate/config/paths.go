@@ -20,12 +20,15 @@ const (
 	UnixCrateName    = ".crate"
 	DatabaseName     = "filemeta.db"
 	ConfigName       = "config.yaml"
+	LogDirName       = "logs"
+	LogFileName      = "events.log"
 )
 
 var (
 	cratePath   string // Internal config path identifier
 	crateDBPath string // The path to the database storing the metadata
 	configPath  string // The path to the YAML configuration file
+	loggingPath string // The path to store the log files
 )
 
 //=============================================================================
@@ -49,6 +52,7 @@ func ClearPathCache() {
 	cratePath = ""
 	crateDBPath = ""
 	configPath = ""
+	loggingPath = ""
 }
 
 //=============================================================================
@@ -124,6 +128,34 @@ func CrateConfigPath() (string, error) {
 	}
 
 	return configPath, nil
+}
+
+// Returns the logging path and performs initialization if not exists
+func CrateLoggingPath() (string, error) {
+
+	// Ensure that there is a cratePath instantiated
+	if cratePath == "" {
+		if _, err := CrateDirectory(); err != nil {
+			return "", nil
+		}
+	}
+
+	// Cache the crate logging path
+	if loggingPath == "" {
+		loggingDir := filepath.Join(cratePath, LogDirName)
+
+		// Ensure that the crate directory path exists and is initialized
+		if err := InitializeCrateDirectory(loggingDir); err != nil {
+			return "", err
+		}
+
+		// Set the logging file in the logging dir
+		loggingPath = filepath.Join(loggingDir, LogFileName)
+
+	}
+
+	return loggingPath, nil
+
 }
 
 //=============================================================================
