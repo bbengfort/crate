@@ -1,0 +1,9 @@
+site_name: Crate
+site_description: File archival and meta data synchronization tool (experimental)
+repo_url: https://github.com/bbengfort/crate
+site_author: Benjamin Bengfort
+docs_dir: src
+site_dir: build
+pages:
+    - ['index.md', 'Introduction']
+theme: readthedocs

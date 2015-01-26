@@ -26,3 +26,6 @@ _testmain.go
 
 # Build folder
 bin
+
+# Generated Docs
+docs/build
